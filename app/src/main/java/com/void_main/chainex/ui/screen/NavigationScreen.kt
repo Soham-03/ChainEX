@@ -13,8 +13,8 @@ fun NavigationScreen(modifier: Modifier,navController:NavHostController){
 
     NavHost(navController = navController, startDestination = NavItem.Home.route) {
         composable(NavItem.Home.route) { HomeScreen() }
-        composable(NavItem.History.route) { HistoryScreen() }
         composable(NavItem.Discover.route) { DiscoverScreen() }
+        composable(NavItem.History.route) { HistoryScreen() }
         composable(NavItem.Reward.route) { RewardScreen() }
     }
 }
