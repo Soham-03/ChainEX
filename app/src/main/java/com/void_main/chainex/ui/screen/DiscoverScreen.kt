@@ -96,7 +96,7 @@ fun DiscoverScreen() {
                     .height(250.dp)
             )
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(130.dp),
+                columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .height(230.dp)
                     .padding(24.dp, 16.dp, 24.dp, 0.dp),

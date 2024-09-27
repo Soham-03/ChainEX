@@ -1,4 +1,5 @@
 [versions]
+activityComposeVersion = "1.8.0-alpha07"
 agp = "8.6.1"
 kotlin = "1.9.0"
 coreKtx = "1.10.1"
@@ -8,10 +9,13 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
 composeBom = "2024.04.01"
+navigationCompose = "2.8.1"
 playServicesWallet = "19.4.0"
 
 [libraries]
+androidx-activity-compose-v180alpha07 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

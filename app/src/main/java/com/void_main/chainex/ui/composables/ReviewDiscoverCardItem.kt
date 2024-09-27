@@ -44,7 +44,7 @@ fun ReviewDiscoverCardItem() {
         Column(modifier = Modifier.background(Grey_color)) {
             // Image section
             Image(
-                painter = painterResource(id = R.drawable.review_image_discover), // Replace with your image URL
+                painter = painterResource(id = R.drawable.ic_launcher_background), // Replace with your image URL
                 contentDescription = "Market Image",
                 modifier = Modifier
                     .fillMaxWidth()
