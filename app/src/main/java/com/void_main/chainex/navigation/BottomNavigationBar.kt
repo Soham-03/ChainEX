@@ -18,7 +18,7 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun BottomNavigationBar(navController:NavHostController){
-    val navItems = listOf(NavItem.Home,NavItem.History,NavItem.Discover,NavItem.Reward)
+    val navItems = listOf(NavItem.Home,NavItem.Discover,NavItem.History,NavItem.Reward)
     var selectedItem by remember { mutableStateOf(0) }
 
     NavigationBar {
