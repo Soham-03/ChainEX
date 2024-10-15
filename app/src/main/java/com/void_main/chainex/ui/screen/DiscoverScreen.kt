@@ -55,7 +55,7 @@ fun DiscoverScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = it.calculateTopPadding(), bottom = 110.dp)
+                .padding(top = it.calculateTopPadding())
                 .verticalScroll(rememberScrollState())
 
         ) {
@@ -236,18 +236,19 @@ fun DiscoverScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 0.dp)
+                    .height(50.dp)
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
                                 Color(0xFF00BCD4), Color(0xFF8BC34A)
                             ) // Gradient from blue to green
-                        ), shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(8.dp),
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
-                Text(text = "Explore Community")
-
+                Text(text = "Explore Community" )
+                Spacer(Modifier.width(6.dp))
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,

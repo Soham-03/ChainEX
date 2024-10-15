@@ -28,10 +28,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ChangeSystemBarsTheme(!isSystemInDarkTheme())
+//            ChangeSystemBarsTheme(!isSystemInDarkTheme())
             ChainEXTheme {
                 Surface(
-                    modifier = Modifier.safeDrawingPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
@@ -43,31 +42,31 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    private fun ChangeSystemBarsTheme(lightTheme: Boolean) {
-        val barColor = MaterialTheme.colorScheme.background.toArgb()
-        LaunchedEffect(lightTheme) {
-            if (lightTheme) {
-                enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.light(
-                        barColor, barColor,
-                    ),
-                    navigationBarStyle = SystemBarStyle.light(
-                        barColor, barColor,
-                    ),
-                )
-            } else {
-                enableEdgeToEdge(
-                    statusBarStyle = SystemBarStyle.dark(
-                        barColor,
-                    ),
-                    navigationBarStyle = SystemBarStyle.dark(
-                        barColor,
-                    ),
-                )
-            }
-        }
-    }
+//    @Composable
+//    private fun ChangeSystemBarsTheme(lightTheme: Boolean) {
+//        val barColor = MaterialTheme.colorScheme.background.toArgb()
+//        LaunchedEffect(lightTheme) {
+//            if (lightTheme) {
+//                enableEdgeToEdge(
+//                    statusBarStyle = SystemBarStyle.light(
+//                        barColor, barColor,
+//                    ),
+//                    navigationBarStyle = SystemBarStyle.light(
+//                        barColor, barColor,
+//                    ),
+//                )
+//            } else {
+//                enableEdgeToEdge(
+//                    statusBarStyle = SystemBarStyle.dark(
+//                        barColor,
+//                    ),
+//                    navigationBarStyle = SystemBarStyle.dark(
+//                        barColor,
+//                    ),
+//                )
+//            }
+//        }
+//    }
 }
 
 @Composable
