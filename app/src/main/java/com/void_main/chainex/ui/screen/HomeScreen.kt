@@ -1,7 +1,10 @@
 package com.example.fiintechapp.ui.screen
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -45,47 +49,114 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.void_main.chainex.R
 import com.void_main.chainex.ui.composables.IconButtonWithLabel
 import com.void_main.chainex.ui.theme.Button_color
+import com.void_main.chainex.ui.theme.Green
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
+    val context = LocalContext.current
+    val barCodeScanner = com.void_main.chainex.util.BarcodeScanner(context)
     Column(
         Modifier.imePadding()
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.homescreen_image),
-                contentDescription = null,
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp),
-                contentScale = ContentScale.Crop
-            )
+                    .background(Color.Black)
+                    .padding(horizontal = 12.dp)
+            ){
+                Row(
+                    modifier = Modifier
+                        .padding(top = 12.dp, end = 12.dp)
+                        .align(Alignment.End)
+                ){
+                    Icon(
+                        imageVector =  Icons.Filled.Person,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier
+                            .padding(top = 15.dp)
+                            .size(40.dp)
+                    )
+                }
+                Text(
+                    text = "VERFIY YOUR SIM",
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    Column {
+                        Text(
+                            text = "To activate your\nUPI Payments",
+                            fontSize = 24.sp,
+                            color = Green,
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                        )
+                        Button (
+                            onClick = {}, colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black,
+                        ),
+                            shape = RoundedCornerShape(10.dp),
+                            border = BorderStroke(1.5.dp, Green)
+                        ) {
+                            Text("VERIFY SIM")
+                        }
+                    }
+
+                    Image(
+                        painter = painterResource(R.drawable.sim_card),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(200.dp)
+                    )
+
+                }
+
+            }
 
             Button(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(90.dp)
-                    .padding(16.dp, 12.dp),
+                    .padding(10.dp, 12.dp),
                 border = BorderStroke(1.dp, Button_color),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
@@ -100,8 +171,7 @@ fun HomeScreen() {
                 )
                 Text(
                     text = "Search name, UPI ID or Number",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 18.sp
                 )
             }
 
@@ -110,14 +180,98 @@ fun HomeScreen() {
                     .fillMaxWidth()
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
+
             ) {
-                IconButtonWithLabel(icon = R.drawable.scan_qr_code, label = "Scan QR", Modifier)
-                IconButtonWithLabel(icon = R.drawable.wallet, label = "Add funds", Modifier)
-                IconButtonWithLabel(
-                    icon = R.drawable.receipt_text,
-                    label = "Recharge \n& Bills",
-                    Modifier
-                )
+                val scope = rememberCoroutineScope()
+                val barcodeRes = barCodeScanner.barCodeRes.collectAsStateWithLifecycle()
+                var QROP = ""
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Button(
+                        shape = CircleShape,
+                        onClick = {
+                            scope.launch {
+                                barCodeScanner.startScan()
+                                barcodeRes.value.toString()
+                            }
+                        },
+                        border = BorderStroke(2.dp, Color.Black),
+                        colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = Color.White
+                            ),
+                        modifier = Modifier
+                            .size(64.dp)
+
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.scan_qr_code),
+                            null,
+                            modifier = Modifier
+                                .size(100.dp)
+                        )
+                    }
+                    Text("Scan QR")
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Button(
+                        shape = CircleShape,
+                        onClick = {
+                            scope.launch {
+                                barCodeScanner.startScan()
+                                barcodeRes.value.toString()
+                            }
+                        },
+                        border = BorderStroke(2.dp, Color.Black),
+                        colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = Color.White
+                            ),
+                        modifier = Modifier
+                            .size(64.dp)
+
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.wallet),
+                            null,
+                            modifier = Modifier
+                                .size(100.dp)
+                        )
+                    }
+                    Text("Add Funds")
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Button(
+                        shape = CircleShape,
+                        onClick = {
+                            scope.launch {
+                                barCodeScanner.startScan()
+                                barcodeRes.value.toString()
+                            }
+                        },
+                        border = BorderStroke(2.dp, Color.Black),
+                        colors = ButtonDefaults
+                            .buttonColors(
+                                containerColor = Color.White
+                            ),
+                        modifier = Modifier
+                            .size(64.dp)
+
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.receipt_text),
+                            null,
+                            modifier = Modifier
+                                .size(100.dp)
+                        )
+                    }
+                    Text("Bills")
+                }
             }
 
 
@@ -126,6 +280,7 @@ fun HomeScreen() {
                 modifier = Modifier
                     .height(70.dp)
                     .padding(16.dp, 12.dp)
+                    .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 border = BorderStroke(1.dp, Button_color),
                 shape = RoundedCornerShape(20.dp),
@@ -146,13 +301,15 @@ fun HomeScreen() {
                 )
             }
 
+            Spacer(modifier = Modifier.height(10.dp))
             Image(
                 painter = painterResource(id = R.drawable.invite_friend_image),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 0.dp)
-                    .height(260.dp)
+                    .size(200.dp)
+                    .padding(16.dp,0.dp)
+                    .clip(RoundedCornerShape(10.dp))
                     .clickable {
                         //invite friend activity
                     },
@@ -165,4 +322,11 @@ fun HomeScreen() {
 
     }
 
+}
+
+
+@Preview
+@Composable
+fun PreviewHomeScreen(){
+    HomeScreen()
 }
