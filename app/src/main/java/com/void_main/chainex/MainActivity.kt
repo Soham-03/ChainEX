@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.fiintechapp.ui.screen.HomeScreen
 import com.example.fiintechapp.ui.screen.MainScreen
+import com.example.fiintechapp.ui.screen.RewardScreen
 import com.void_main.chainex.ui.theme.ChainEXTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,10 +35,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.safeDrawingPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
-                    MainScreen(navController)
-//                    HomeScreen()
-//                    DiscoverScreen()
+//                    val navController = rememberNavController()
+//                    MainScreen(navController)
+////                    DiscoverScreen()
+                    RewardScreen()
                 }
             }
         }
