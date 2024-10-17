@@ -17,3 +17,4 @@ val Reward_Button_color = Color (0xFF162027)
 
 val Button_Color_RewardScreen = Color(0xFF564487)
 val Coloum_Bg_Color_RewardScreen = Color(0x0F1D0A50)
+val Green  = Color(0xFF40FF26)
