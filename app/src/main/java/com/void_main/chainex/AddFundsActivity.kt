@@ -11,33 +11,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.void_main.chainex.ui.screen.PaymentScreen
+import com.void_main.chainex.ui.screen.RechargeScreen
 import com.void_main.chainex.ui.theme.ChainEXTheme
 
-class PaymentActivity : ComponentActivity() {
+class AddFundsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             ChainEXTheme {
-                PaymentScreen()
+                RechargeScreen()
             }
         }
     }
 }
 
-@Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview2() {
+fun GreetingPreview3() {
     ChainEXTheme {
-        Greeting2("Android")
+//        Greeting3("Android")
     }
 }

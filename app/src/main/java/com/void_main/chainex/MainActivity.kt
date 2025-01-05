@@ -22,22 +22,26 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fiintechapp.ui.screen.HomeScreen
 import com.example.fiintechapp.ui.screen.MainScreen
 import com.example.fiintechapp.ui.screen.RewardScreen
+import com.void_main.chainex.ui.screen.PaymentScreen
+import com.void_main.chainex.ui.screen.RechargeScreen
 import com.void_main.chainex.ui.theme.ChainEXTheme
+import org.web3j.protocol.Web3j
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
 //            ChangeSystemBarsTheme(!isSystemInDarkTheme())
             ChainEXTheme {
                 Surface(
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    val navController = rememberNavController()
-//                    MainScreen(navController)
-////                    DiscoverScreen()
-                    RewardScreen()
+                    val navController = rememberNavController()
+                    MainScreen(navController)
+//                    DiscoverScreen()
+//                    PaymentScreen()
                 }
             }
         }

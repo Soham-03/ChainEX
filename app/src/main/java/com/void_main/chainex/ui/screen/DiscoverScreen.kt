@@ -1,5 +1,7 @@
 package com.example.fiintechapp.ui.screen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollable
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fiintechapp.ui.composables.ReviewDiscoverCardItem
 import com.void_main.chainex.R
+import com.void_main.chainex.activity.ItenaryActivity
 import com.void_main.chainex.ui.theme.Blackish_color
 
 
@@ -76,8 +80,16 @@ fun DiscoverScreen() {
                         )
                     }
                 }
+                val context = LocalContext.current
+                Button(onClick = {
+                    val phone_intent = Intent(Intent.ACTION_CALL)
+                    // Set data of Intent through Uri by parsing phone number
+                    phone_intent.setData(Uri.parse("tel:9307377878"))
 
-                Button(onClick = { /*TODO*/ }) {
+
+                    // start Intent
+                    context.startActivity(phone_intent)
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.phone_call),
                         contentDescription = null,
@@ -230,9 +242,12 @@ fun DiscoverScreen() {
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
+            val context = LocalContext.current
             Button(
-                onClick = { /* Handle click */ },
+                onClick = {
+                    val intent = Intent(context, ItenaryActivity::class.java)
+                    context.startActivity(intent)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp, 0.dp)
@@ -247,7 +262,7 @@ fun DiscoverScreen() {
                     ),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
-                Text(text = "Explore Community" )
+                Text(text = "Get Itenary" )
                 Spacer(Modifier.width(6.dp))
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,

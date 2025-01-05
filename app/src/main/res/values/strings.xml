@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">ChainEX</string>
     <string name="title_activity_payment">PaymentActivity</string>
+    <string name="title_activity_add_funds">AddFundsActivity</string>
+    <string name="title_activity_itenary">ItenaryActivity</string>
+    <string name="title_activity_street_view">StreetViewActivity</string>
 </resources>

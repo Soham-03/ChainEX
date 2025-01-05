@@ -1,7 +1,9 @@
 package com.example.fiintechapp.ui.composables
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,12 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.void_main.chainex.R
+import com.void_main.chainex.activity.ItenaryActivity
 import com.void_main.chainex.ui.theme.Grey_color
 
 //it is dummy will add data after wards
@@ -34,14 +38,23 @@ import com.void_main.chainex.ui.theme.Grey_color
 
 @Composable
 fun ReviewDiscoverCardItem() {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .width(350.dp)
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable {
+
+            },
         shape = RoundedCornerShape(16.dp),
+//        modifier = Modifier
+
 //        elevation = 8.dp,
     ) {
-        Column(modifier = Modifier.background(Grey_color)) {
+        Column(modifier = Modifier.background(Grey_color).clickable {
+            val intent = Intent(context, ItenaryActivity::class.java)
+            context.startActivity(intent)
+        }) {
             // Image section
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_background), // Replace with your image URL

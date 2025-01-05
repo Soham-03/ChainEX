@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.void_main.chainex" />
+                  <option name="mobileSdkAppId" value="1:973372863893:android:3a6ff41a9b90fb9552329c" />
+                  <option name="projectId" value="chainex-b9e93" />
+                  <option name="projectNumber" value="973372863893" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

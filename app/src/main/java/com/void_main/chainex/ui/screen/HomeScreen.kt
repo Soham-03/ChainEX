@@ -66,11 +66,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.void_main.chainex.AddFundsActivity
+import com.void_main.chainex.PaymentActivity
 import com.void_main.chainex.R
 import com.void_main.chainex.ui.composables.IconButtonWithLabel
 import com.void_main.chainex.ui.theme.Button_color
@@ -82,7 +85,8 @@ fun HomeScreen() {
     val context = LocalContext.current
     val barCodeScanner = com.void_main.chainex.util.BarcodeScanner(context)
     Column(
-        Modifier.imePadding()
+        Modifier
+            .imePadding()
             .background(Color.White)
     ) {
         Column(
@@ -217,13 +221,12 @@ fun HomeScreen() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
+
                     Button(
                         shape = CircleShape,
                         onClick = {
-                            scope.launch {
-                                barCodeScanner.startScan()
-                                barcodeRes.value.toString()
-                            }
+                            val intent = Intent(context, AddFundsActivity::class.java)
+                            context.startActivity(intent)
                         },
                         border = BorderStroke(2.dp, Color.Black),
                         colors = ButtonDefaults
@@ -249,10 +252,8 @@ fun HomeScreen() {
                     Button(
                         shape = CircleShape,
                         onClick = {
-                            scope.launch {
-                                barCodeScanner.startScan()
-                                barcodeRes.value.toString()
-                            }
+                            val intent = Intent( context, PaymentActivity::class.java)
+                            context.startActivity(intent)
                         },
                         border = BorderStroke(2.dp, Color.Black),
                         colors = ButtonDefaults
@@ -308,7 +309,7 @@ fun HomeScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .size(200.dp)
-                    .padding(16.dp,0.dp)
+                    .padding(16.dp, 0.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .clickable {
                         //invite friend activity

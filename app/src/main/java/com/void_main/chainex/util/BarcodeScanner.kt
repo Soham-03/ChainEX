@@ -3,9 +3,11 @@ package com.void_main.chainex.util
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.navigation.compose.rememberNavController
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.void_main.chainex.PaymentActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class BarcodeScanner(val context: Context) {
@@ -24,6 +26,8 @@ class BarcodeScanner(val context: Context) {
                     val rawValue = barcode.rawValue
                     System.out.println("GG:"+rawValue)
                     barCodeRes.value = barcode.rawValue
+                    val intent = Intent( context, PaymentActivity::class.java)
+                    context.startActivity(intent)
                 }
                 .addOnCanceledListener {
                     Toast.makeText(context, "Cancelled Scan", Toast.LENGTH_SHORT).show()

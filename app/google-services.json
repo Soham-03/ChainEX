@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "973372863893",
+    "project_id": "chainex-b9e93",
+    "storage_bucket": "chainex-b9e93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:973372863893:android:3a6ff41a9b90fb9552329c",
+        "android_client_info": {
+          "package_name": "com.void_main.chainex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL2w0qpeLdBrm1CHGBU-mBYx6aGTe_WC8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

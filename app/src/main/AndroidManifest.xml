@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +20,21 @@
         android:theme="@style/Theme.ChainEX"
         tools:targetApi="31">
         <activity
+            android:name=".ui.screen.StreetViewActivity"
+            android:exported="false"
+            android:label="@string/title_activity_street_view"
+            android:theme="@style/Theme.ChainEX" />
+        <activity
+            android:name=".activity.ItenaryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_itenary"
+            android:theme="@style/Theme.ChainEX" />
+        <activity
+            android:name=".AddFundsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_funds"
+            android:theme="@style/Theme.ChainEX" />
+        <activity
             android:name=".PaymentActivity"
             android:exported="false"
             android:label="@string/title_activity_payment"
@@ -21,6 +43,9 @@
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode_ui" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDl6JiX9ikKwi5Uq-h-hOfDgze80jg3waY" />
 
         <activity
             android:name=".MainActivity"
