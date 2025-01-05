@@ -25,7 +25,6 @@ import com.example.fiintechapp.ui.screen.RewardScreen
 import com.void_main.chainex.ui.screen.PaymentScreen
 import com.void_main.chainex.ui.screen.RechargeScreen
 import com.void_main.chainex.ui.theme.ChainEXTheme
-import org.web3j.protocol.Web3j
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -76,9 +76,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     //web3
-    implementation("com.walletconnect:android-sdk:1.11.0")
-    implementation("org.web3j:core:4.9.8")
-    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+//    implementation("com.walletconnect:android-sdk:1.11.0")
+//    implementation("org.web3j:core:4.9.8")
+//    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
     //
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
