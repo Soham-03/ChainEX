@@ -4,4 +4,5 @@
     <string name="title_activity_add_funds">AddFundsActivity</string>
     <string name="title_activity_itenary">ItenaryActivity</string>
     <string name="title_activity_street_view">StreetViewActivity</string>
+    <string name="title_activity_kyc_screen.kt">KycScreen.kt</string>
 </resources>
