@@ -1,47 +1,24 @@
-package com.void_main.chainex.ui.screen
-
+import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -49,254 +26,243 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.room.compiler.processing.util.Resource
-import com.void_main.chainex.R
+import com.void_main.chainex.activity.KYCActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    onBackClick: () -> Unit = {},
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
-    onForgotPasswordClick: () -> Unit = {},
-    onSignUpClick: () -> Unit = {}
-) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun ChainExLoginScreen() {
+    // State for email and password
+    var email by remember { mutableStateOf("sohamgg@gmail.com") }
+    var password by remember { mutableStateOf("soham123") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var rememberMe by remember { mutableStateOf(false) }
 
-    val mintGreen = Color(0xFFE0F2E9)
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
+    // Define the app colors - light theme
+    val lightBackground = Color(0xFFF8F9FA)
+    val accentGreen = Color(0xFF4CAF50)
+    val buttonBlue = Color(0xFF1A73E8)
+    val cardBg = Color(0xFFEAEEF1)
+    val textColor = Color(0xFF202124)
+    val secondaryTextColor = Color(0xFF5F6368)
+    val context = LocalContext.current
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(lightBackground)
+            .padding(16.dp)
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            // App logo/branding
+            // Logo and app name
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(mintGreen),
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(accentGreen.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "ChainEX",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    text = "₹",
+                    fontSize = 48.sp,
+                    color = accentGreen,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Title and description
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = "Welcome back",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                )
+            Text(
+                text = "ChainEx",
+                fontSize = 32.sp,
+                color = textColor,
+                fontWeight = FontWeight.Bold
+            )
 
-                Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Secure Blockchain Payments",
+                fontSize = 16.sp,
+                color = secondaryTextColor,
+                fontWeight = FontWeight.Light
+            )
 
-                Text(
-                    text = "Sign in to your account",
-                    color = Color.Gray,
-                    fontSize = 16.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
             // Email field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Email,
-                        contentDescription = "Email"
+                        contentDescription = "Email",
+                        tint = accentGreen
                     )
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor,
+                    cursorColor = accentGreen,
+                    focusedBorderColor = accentGreen,
+                    unfocusedBorderColor = secondaryTextColor.copy(alpha = 0.5f),
+                    focusedLabelColor = accentGreen,
+                    unfocusedLabelColor = secondaryTextColor
                 ),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Password field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth(),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
-                        contentDescription = "Password"
+                        contentDescription = "Password",
+                        tint = accentGreen
                     )
                 },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                            imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (passwordVisible) "Hide password" else "Show password",
+                            tint = accentGreen
                         )
                     }
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = textColor,
+                    unfocusedTextColor = textColor,
+                    cursorColor = accentGreen,
+                    focusedBorderColor = accentGreen,
+                    unfocusedBorderColor = secondaryTextColor.copy(alpha = 0.5f),
+                    focusedLabelColor = accentGreen,
+                    unfocusedLabelColor = secondaryTextColor
                 ),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             )
 
-            // Remember me and Forgot password
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = rememberMe,
-                        onCheckedChange = { rememberMe = it }
-                    )
-                    Text(
-                        text = "Remember me",
-                        fontSize = 14.sp
-                    )
-                }
+            Spacer(modifier = Modifier.height(8.dp))
 
-                TextButton(onClick = onForgotPasswordClick) {
-                    Text(
-                        text = "Forgot password?",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+            // Forgot password text
+            Text(
+                text = "Forgot Password?",
+                color = accentGreen,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(end = 16.dp)
+            )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Login button
             Button(
-                onClick = { onLoginClick(email, password) },
+                onClick = {
+                    val intent = Intent(context, KYCActivity::class.java)
+                    context.startActivity(intent)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = buttonBlue
+                ),
+                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 Text(
-                    "Login",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    text = "LOG IN",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
             }
 
-            // Or divider
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Alternative login methods
+            Text(
+                text = "or login with",
+                color = secondaryTextColor,
+                fontSize = 14.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Social login buttons row
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .weight(1f)
-                        .background(Color.LightGray)
-                )
-                Text(
-                    text = "  OR  ",
-                    color = Color.Gray,
-                    fontSize = 14.sp
-                )
-                Box(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .weight(1f)
-                        .background(Color.LightGray)
-                )
-            }
-
-            // Google Sign In button
-            OutlinedButton(
-                onClick = { /* Handle Google sign-in */ },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                border = BorderStroke(1.dp, Color.LightGray)
+                    .padding(horizontal = 32.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                // These would normally have icons for social login options
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(cardBg),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google),
-                        contentDescription = "Google",
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Unspecified
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "Continue with Google",
-                        fontSize = 16.sp
-                    )
+                    Text("G", color = textColor, fontWeight = FontWeight.Bold)
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(cardBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("f", color = textColor, fontWeight = FontWeight.Bold)
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(cardBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("in", color = textColor, fontWeight = FontWeight.Bold)
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Sign up text
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Don't have an account?",
-                    fontSize = 14.sp,
-                    color = Color.Gray
+                    text = "Don't have an account? ",
+                    color = secondaryTextColor,
+                    fontSize = 14.sp
                 )
 
-                TextButton(onClick = onSignUpClick) {
-                    Text(
-                        text = "Sign up",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                Text(
+                    text = "Sign Up",
+                    color = accentGreen,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
             }
         }
     }
@@ -304,8 +270,6 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    MaterialTheme {
-        LoginScreen()
-    }
+fun LoginPreview() {
+    ChainExLoginScreen()
 }

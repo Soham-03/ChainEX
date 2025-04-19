@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.example.fiintechapp.ui.screen.HomeScreen
 import com.example.fiintechapp.ui.screen.MainScreen
 import com.example.fiintechapp.ui.screen.RewardScreen
 import com.void_main.chainex.ui.screen.PaymentScreen

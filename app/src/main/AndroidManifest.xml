@@ -21,10 +21,26 @@
         android:theme="@style/Theme.ChainEX"
         tools:targetApi="31">
         <activity
-            android:name=".ui.screen.KycScreen.kt"
+            android:name=".activity.AddFundsActivity"
             android:exported="false"
-            android:label="@string/title_activity_kyc_screen.kt"
+            android:label="@string/title_activity_add_funds"
             android:theme="@style/Theme.ChainEX" />
+        <activity
+            android:name=".activity.KYCActivity"
+            android:exported="false"
+            android:label="@string/title_activity_kycactivity"
+            android:theme="@style/Theme.ChainEX" />
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="true"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.ChainEX">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.screen.StreetViewActivity"
             android:exported="false"
@@ -59,11 +75,6 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.ChainEX"
             android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

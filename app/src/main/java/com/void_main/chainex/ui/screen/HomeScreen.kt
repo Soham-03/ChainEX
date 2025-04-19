@@ -1,13 +1,19 @@
-package com.example.fiintechapp.ui.screen
+package com.void_main.chainex.ui.screen
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -34,33 +40,44 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -79,66 +96,238 @@ import com.void_main.chainex.ui.composables.IconButtonWithLabel
 import com.void_main.chainex.ui.theme.Button_color
 import com.void_main.chainex.ui.theme.Green
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun HomeScreen() {
     val context = LocalContext.current
     val barCodeScanner = com.void_main.chainex.util.BarcodeScanner(context)
+
+    // State for balance visibility
+    var isBalanceVisible by remember { mutableStateOf(false) }
+    val balanceAmount = "₹12,580.45"
+
+    // Format currency values
+    val formatInr = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
+    val walletBalance = 12580.45
+
+    // Animation for balance visibility
+    val visibilityIconRotation by animateFloatAsState(
+        targetValue = if (isBalanceVisible) 0f else 180f,
+        animationSpec = tween(300)
+    )
+
+    // Background colors
+    val lightBackground = Color(0xFFF8F9FA)
+    val accentGreen = Color(0xFF4CAF50)
+    val buttonBlue = Color(0xFF1A73E8)
+    val cardBg = Color(0xFFFFFFFF)
+    val textColor = Color(0xFF202124)
+    val secondaryTextColor = Color(0xFF5F6368)
+
     Column(
         Modifier
             .imePadding()
-            .background(Color.White)
+            .background(lightBackground)
+            .fillMaxSize()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
         ) {
+            // Top Section with Gradient Background
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Black)
-                    .padding(horizontal = 12.dp)
-            ){
-                Row(
-                    modifier = Modifier
-                        .padding(top = 12.dp, end = 12.dp)
-                        .align(Alignment.End)
-                ){
-                    Icon(
-                        imageVector =  Icons.Filled.Person,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier
-                            .padding(top = 15.dp)
-                            .size(40.dp)
-                    )
-                }
-                Text(
-                    text = "VERFIY YOUR SIM",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                )
+                    .padding(16.dp)
+            ) {
+                // Profile and Notification
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "ChainEx",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    Row {
+                        IconButton(
+                            onClick = { /* Notification */ }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "Notifications",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { /* Profile */ }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Balance Card
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF151515)
+                    ),
+                    border = BorderStroke(1.dp, Color(0xFF333333)),
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Wallet Balance",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 14.sp
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            AnimatedVisibility(
+                                visible = isBalanceVisible,
+                                enter = fadeIn(animationSpec = tween(300)),
+                                exit = fadeOut(animationSpec = tween(300))
+                            ) {
+                                Text(
+                                    text = formatInr.format(walletBalance),
+                                    color = accentGreen,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            AnimatedVisibility(
+                                visible = !isBalanceVisible,
+                                enter = fadeIn(animationSpec = tween(300)),
+                                exit = fadeOut(animationSpec = tween(300))
+                            ) {
+                                Text(
+                                    text = "₹ • • • • •",
+                                    color = accentGreen,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            IconButton(
+                                onClick = { isBalanceVisible = !isBalanceVisible }
+                            ) {
+                                Icon(
+                                    imageVector = if (isBalanceVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    contentDescription = if (isBalanceVisible) "Hide Balance" else "Show Balance",
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .graphicsLayer { rotationY = visibilityIconRotation }
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    val intent = Intent(context, AddFundsActivity::class.java)
+                                    context.startActivity(intent)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = buttonBlue
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Add Money")
+                            }
+
+                            Button(
+                                onClick = { /* History */ },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color.White
+                                ),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("History")
+                            }
+                        }
+                    }
+                }
+
+                // SIM Verification Section
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ){
-                    Column {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "VERIFY YOUR SIM",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+
                         Text(
                             text = "To activate your\nUPI Payments",
-                            fontSize = 24.sp,
-                            color = Green,
+                            fontSize = 22.sp,
+                            color = accentGreen,
                             modifier = Modifier
-                                .padding(vertical = 16.dp)
+                                .padding(vertical = 8.dp)
                         )
+
                         Button (
-                            onClick = {}, colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black,
-                        ),
+                            onClick = {},
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black,
+                            ),
                             shape = RoundedCornerShape(10.dp),
-                            border = BorderStroke(1.5.dp, Green)
+                            border = BorderStroke(1.5.dp, accentGreen)
                         ) {
                             Text("VERIFY SIM")
                         }
@@ -148,183 +337,236 @@ fun HomeScreen() {
                         painter = painterResource(R.drawable.sim_card),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(200.dp)
+                            .size(150.dp)
+                            .padding(start = 8.dp)
                     )
-
                 }
-
             }
 
-            Button(
-                onClick = { /*TODO*/ },
+            // Search Bar
+            Card(
+                colors = CardDefaults.cardColors(containerColor = cardBg),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(90.dp)
-                    .padding(10.dp, 12.dp),
-                border = BorderStroke(1.dp, Button_color),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+                    .padding(16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null,
-                    tint = Color.Black,
+                Row(
                     modifier = Modifier
-                        .padding(end = 20.dp)
-                        .size(30.dp)
-                )
-                Text(
-                    text = "Search name, UPI ID or Number",
-                    fontSize = 18.sp
-                )
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = secondaryTextColor,
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(24.dp)
+                    )
+
+                    Text(
+                        text = "Search name, UPI ID or Number",
+                        fontSize = 16.sp,
+                        color = secondaryTextColor
+                    )
+                }
             }
+
+            // Quick Actions
+            Text(
+                text = "Quick Actions",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = textColor,
+                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 8.dp)
+            )
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 val scope = rememberCoroutineScope()
                 val barcodeRes = barCodeScanner.barCodeRes.collectAsStateWithLifecycle()
-                var QROP = ""
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Button(
-                        shape = CircleShape,
-                        onClick = {
-                            scope.launch {
-                                barCodeScanner.startScan()
-                                barcodeRes.value.toString()
-                            }
-                        },
-                        border = BorderStroke(2.dp, Color.Black),
-                        colors = ButtonDefaults
-                            .buttonColors(
-                                containerColor = Color.White
-                            ),
-                        modifier = Modifier
-                            .size(64.dp)
 
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.scan_qr_code),
-                            null,
-                            modifier = Modifier
-                                .size(100.dp)
-                        )
+                // Scan QR Button
+                QuickActionButton(
+                    icon = R.drawable.scan_qr_code,
+                    label = "Scan QR",
+                    onClick = {
+                        scope.launch {
+                            barCodeScanner.startScan()
+                            barcodeRes.value.toString()
+                        }
                     }
-                    Text("Scan QR")
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                )
 
-                    Button(
-                        shape = CircleShape,
-                        onClick = {
-                            val intent = Intent(context, AddFundsActivity::class.java)
-                            context.startActivity(intent)
-                        },
-                        border = BorderStroke(2.dp, Color.Black),
-                        colors = ButtonDefaults
-                            .buttonColors(
-                                containerColor = Color.White
-                            ),
-                        modifier = Modifier
-                            .size(64.dp)
-
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.wallet),
-                            null,
-                            modifier = Modifier
-                                .size(100.dp)
-                        )
+                // Add Funds Button
+                QuickActionButton(
+                    icon = R.drawable.wallet,
+                    label = "Add Funds",
+                    onClick = {
+                        val intent = Intent(context, AddFundsActivity::class.java)
+                        context.startActivity(intent)
                     }
-                    Text("Add Funds")
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Button(
-                        shape = CircleShape,
-                        onClick = {
-                            val intent = Intent( context, PaymentActivity::class.java)
-                            context.startActivity(intent)
-                        },
-                        border = BorderStroke(2.dp, Color.Black),
-                        colors = ButtonDefaults
-                            .buttonColors(
-                                containerColor = Color.White
-                            ),
-                        modifier = Modifier
-                            .size(64.dp)
+                )
 
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.receipt_text),
-                            null,
-                            modifier = Modifier
-                                .size(100.dp)
-                        )
+                // Bills Button
+                QuickActionButton(
+                    icon = R.drawable.receipt_text,
+                    label = "Bills",
+                    onClick = {
+                        val intent = Intent(context, PaymentActivity::class.java)
+                        context.startActivity(intent)
                     }
-                    Text("Bills")
-                }
+                )
             }
 
-
-            Button(
-                onClick = { },
+            // Personal Wallet Card
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = cardBg
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
-                    .height(70.dp)
-                    .padding(16.dp, 12.dp)
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
-                border = BorderStroke(1.dp, Button_color),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Black)
+                    .padding(16.dp)
+                    .clickable { /* Personal Wallet */ }
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.wallet),
-                    contentDescription = null,
-                    tint = Color.Black,
+                Row(
                     modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(16.dp)
-                )
-                Text(
-                    text = "Personal Wallet",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.wallet),
+                        contentDescription = null,
+                        tint = textColor,
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(24.dp)
+                    )
+
+                    Text(
+                        text = "Personal Wallet",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = textColor,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        tint = secondaryTextColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
-            Image(
-                painter = painterResource(id = R.drawable.invite_friend_image),
-                contentDescription = null,
+            // Invite Friends Banner
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFE8F5E9)
+                ),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .size(200.dp)
-                    .padding(16.dp, 0.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .clickable {
-                        //invite friend activity
-                    },
-                contentScale = ContentScale.Fit
-            )
+                    .padding(16.dp)
+                    .clickable { /* Invite Friends */ }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Invite a friend and get Rs 400",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = textColor
+                        )
+
+                        Text(
+                            text = "For every friend who joins and completes their KYC, you'll earn Rs 400 and they'll earn Rs 25",
+                            fontSize = 14.sp,
+                            color = secondaryTextColor,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+
+                        Button(
+                            onClick = { /* Invite */ },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = accentGreen
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Text("Invite Now")
+                        }
+                    }
+
+                    Image(
+                        painter = painterResource(id = R.drawable.invite_friend_image),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(start = 8.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            }
 
             Spacer(Modifier.height(100.dp))
         }
-
-
     }
-
 }
 
+@Composable
+fun QuickActionButton(
+    icon: Int,
+    label: String,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            shape = CircleShape,
+            onClick = onClick,
+            border = BorderStroke(1.dp, Color(0xFFE0E0E0)),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White
+            ),
+            modifier = Modifier.size(64.dp)
+        ) {
+            Image(
+                painter = painterResource(icon),
+                contentDescription = label,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            color = Color(0xFF202124),
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 @Preview
 @Composable
