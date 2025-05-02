@@ -12,7 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.void_main.chainex.activity.ui.theme.ChainEXTheme
-import com.void_main.chainex.ui.screen.AiItenaryScreen
+import com.void_main.chainex.ui.screen.AiItineraryScreen
+
 
 class ItenaryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +21,9 @@ class ItenaryActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ChainEXTheme {
-                AiItenaryScreen()
+                AiItineraryScreen(
+                    onBackClick = { finish() }
+                )
             }
         }
     }
