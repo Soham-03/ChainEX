@@ -93,6 +93,7 @@ import com.void_main.chainex.AddFundsActivity
 import com.void_main.chainex.PaymentActivity
 import com.void_main.chainex.R
 import com.void_main.chainex.activity.BillActivity
+import com.void_main.chainex.activity.PersonalWalletActivity
 import com.void_main.chainex.activity.ProfileActivity
 import com.void_main.chainex.ui.composables.IconButtonWithLabel
 import com.void_main.chainex.ui.theme.Button_color
@@ -441,7 +442,11 @@ fun HomeScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .clickable { /* Personal Wallet */ }
+                    .clickable {
+                        val intent = Intent(context, PersonalWalletActivity::class.java)
+                        context.startActivity(intent)
+
+                    }
             ) {
                 Row(
                     modifier = Modifier
