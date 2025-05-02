@@ -21,10 +21,19 @@
         android:theme="@style/Theme.ChainEX"
         tools:targetApi="31">
         <activity
+            android:name=".activity.PaymentActivity"
+            android:exported="false"
+            android:label="@string/title_activity_payment"
+            android:theme="@style/Theme.ChainEX" />
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/Theme.ChainEX" />
+        <activity
             android:name="com.razorpay.CheckoutActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:theme="@style/CheckoutTheme">
-        </activity>
+            android:theme="@style/CheckoutTheme" />
         <activity
             android:name=".activity.AddFundsActivity"
             android:exported="false"
@@ -79,8 +88,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.ChainEX"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

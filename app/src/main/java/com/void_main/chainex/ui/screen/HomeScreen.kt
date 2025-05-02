@@ -92,6 +92,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.void_main.chainex.AddFundsActivity
 import com.void_main.chainex.PaymentActivity
 import com.void_main.chainex.R
+import com.void_main.chainex.activity.ProfileActivity
 import com.void_main.chainex.ui.composables.IconButtonWithLabel
 import com.void_main.chainex.ui.theme.Button_color
 import com.void_main.chainex.ui.theme.Green
@@ -172,7 +173,10 @@ fun HomeScreen() {
                         }
 
                         IconButton(
-                            onClick = { /* Profile */ }
+                            onClick = {
+                                val intent = Intent(context, ProfileActivity::class.java)
+                                context.startActivity(intent)
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Person,

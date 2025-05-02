@@ -1,36 +1,15 @@
 package com.void_main.chainex.ui.screen
 
-import androidx.activity.OnBackPressedCallback
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,22 +23,69 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavHostController
 import com.airbnb.lottie.compose.LottieAnimation
-import com.void_main.chainex.R
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.razorpay.Checkout
+import com.void_main.chainex.R
 import com.void_main.chainex.Transaction
 import com.void_main.chainex.TransactionStatus
 import com.void_main.chainex.Utils
+import org.json.JSONObject
 
 @Composable
 fun PaymentScreen() {
     var amount by remember { mutableIntStateOf(0) }
     var showSuccessAnimation by remember { mutableStateOf(false) }
+    var showPaymentError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
     val context = LocalContext.current
+    val activity = context as Activity
+
+    // Initialize Razorpay Checkout
+    val checkout = Checkout()
+    checkout.setKeyID("rzp_test_qaxROdR325sQgT") // Replace with your Razorpay key
+
+    // Function to start Razorpay payment
+    fun startRazorpayPayment() {
+        try {
+            val options = JSONObject()
+
+            // Basic payment options
+            options.put("name", "ChainEx")
+            options.put("description", "Payment to Sanket Mane")
+            options.put("currency", "INR")
+            options.put("amount", amount * 100) // Razorpay expects amount in paise
+
+            // Prefill customer details
+            options.put("prefill", JSONObject().apply {
+                put("email", "user@example.com") // Replace with actual user email
+                put("contact", "9999999999") // Replace with actual user phone
+            })
+
+            // Add theme
+            options.put("theme", JSONObject().apply {
+                put("color", "#000000") // Black theme
+            })
+
+            // Add notes
+            val notes = JSONObject()
+            notes.put("recipient", "Sanket Mane")
+            notes.put("purpose", "Wallet Transfer")
+            options.put("notes", notes)
+
+            checkout.open(activity, options)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            errorMessage = "Failed to initiate payment: ${e.message}"
+            showPaymentError = true
+        }
+    }
+
+    // Success Animation Dialog
     if (showSuccessAnimation) {
-        // Success Animation Dialog
         Dialog(onDismissRequest = { showSuccessAnimation = false }) {
             Card(
                 modifier = Modifier
@@ -72,7 +98,6 @@ fun PaymentScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // You'll need to add a payment_success.json animation file to your raw resources
                     LottieAnimation(
                         composition = rememberLottieComposition(
                             spec = LottieCompositionSpec.RawRes(R.raw.success)
@@ -92,6 +117,20 @@ fun PaymentScreen() {
         }
     }
 
+    // Error Dialog
+    if (showPaymentError) {
+        AlertDialog(
+            onDismissRequest = { showPaymentError = false },
+            title = { Text("Payment Error") },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                Button(onClick = { showPaymentError = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
+
     // Main container
     Column(
         modifier = Modifier
@@ -103,7 +142,7 @@ fun PaymentScreen() {
         // Profile picture
         Image(
             painter = painterResource(id = R.drawable.bitcoin),
-             "Profile Picture",
+            contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(80.dp)
                 .clip(CircleShape),
@@ -172,13 +211,15 @@ fun PaymentScreen() {
             Text(text = "Add note", color = Color.White)
         }
 
+        // Pay button
         Button(
             onClick = {
-                // Simulate payment processing
-                showSuccessAnimation = true
-                Utils.transactions.add(
-                    Transaction(amount, "Sanket Mane", "0x1234...5678", TransactionStatus.SUCCESS)
-                )
+                if (amount > 0) {
+                    startRazorpayPayment()
+                } else {
+                    errorMessage = "Please enter a valid amount"
+                    showPaymentError = true
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -187,10 +228,11 @@ fun PaymentScreen() {
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            enabled = amount > 0
         ) {
             Text(
-                text = "Pay ₹$amount",
+                text = if (amount > 0) "Pay ₹$amount" else "Enter amount",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
