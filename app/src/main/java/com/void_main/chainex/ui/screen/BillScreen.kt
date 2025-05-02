@@ -44,7 +44,7 @@ fun BillScreen(
     val usdToInrRate = 82.5f
     val totalIncome = 200f * usdToInrRate // $200 converted to INR
     val totalExpenses = 0f // No expenses yet
-    val balance = totalIncome - totalExpenses
+    val balance = 15801
 
     // Expense categories
     val expenseCategories = listOf(
@@ -147,7 +147,7 @@ fun BillScreen(
                         )
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
-                                text = formatInr.format(totalIncome),
+                                text = formatInr.format(balance),
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = accentGreen

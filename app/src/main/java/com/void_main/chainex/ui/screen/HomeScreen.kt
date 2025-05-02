@@ -113,7 +113,7 @@ fun HomeScreen() {
 
     // Format currency values
     val formatInr = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
-    val walletBalance = 12580.45
+    val walletBalance = 15801.45
 
     // Animation for balance visibility
     val visibilityIconRotation by animateFloatAsState(

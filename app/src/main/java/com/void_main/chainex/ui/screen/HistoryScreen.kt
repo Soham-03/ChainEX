@@ -332,6 +332,7 @@ fun HistoryScreen() {
         // Date Picker Dialog
         if (showDatePicker) {
             DatePickerDialog(
+                modifier = Modifier.padding(8.dp),
                 onDismissRequest = { showDatePicker = false },
                 confirmButton = {
                     TextButton(
