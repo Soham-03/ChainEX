@@ -54,7 +54,8 @@ android {
 }
 
 dependencies {
-
+    //razorpay
+    implementation ("com.razorpay:checkout:1.6.33")
     //navigation
     implementation (libs.androidx.navigation.compose)
     //activity

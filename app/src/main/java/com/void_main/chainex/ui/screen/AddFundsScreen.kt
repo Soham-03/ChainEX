@@ -1,8 +1,8 @@
 package com.void_main.chainex.ui.screen
 
+import android.app.Activity
 import android.content.Intent
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,13 +20,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.razorpay.Checkout
 import com.void_main.chainex.MainActivity
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,36 +46,28 @@ fun AddFundsScreen() {
     // State variables
     var amount by remember { mutableStateOf("200") }
     var selectedCurrency by remember { mutableStateOf("USD") }
-    var currentScreen by remember { mutableStateOf("amount") } // "amount", "card", "breakdown"
+    var currentScreen by remember { mutableStateOf("amount") } // "amount", "breakdown"
     var isProcessing by remember { mutableStateOf(false) }
-    var processingComplete by remember { mutableStateOf(false) }
-
-    // Credit card form states
-    var cardNumber by remember { mutableStateOf("") }
-    var cardName by remember { mutableStateOf("") }
-    var expiryMonth by remember { mutableStateOf("") }
-    var expiryYear by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
 
     // Conversion rates and fees (would normally come from an API)
     val usdToInrRate = 82.5f
     val eurToInrRate = 89.75f
-    val chainlinkOracleRate = if (selectedCurrency == "USD") 82.42f else 89.68f // Simulated chainlink oracle rate
-    val rateSpread = if (selectedCurrency == "USD") 0.08f else 0.07f // Difference between our rate and chainlink
+    val chainlinkOracleRate = if (selectedCurrency == "USD") 82.42f else 89.68f
+    val rateSpread = if (selectedCurrency == "USD") 0.08f else 0.07f
 
-    // Calculate conversion based on selected currency
+    // Calculate conversion
     val conversionRate = if (selectedCurrency == "USD") usdToInrRate else eurToInrRate
     val amountValue = amount.toFloatOrNull() ?: 0f
     val convertedAmount = amountValue * conversionRate
 
-    // Calculate all fees
-    val serviceCharge = convertedAmount * 0.015f // 1.5% service charge
-    val gstOnService = serviceCharge * 0.18f // 18% GST on service charge
-    val networkFee = 25f // Fixed network fee in INR
-    val spreadAmount = amountValue * rateSpread // Rate spread amount
-    val platformFee = convertedAmount * 0.01f // 1% platform fee
-    val tdsCharge = if (convertedAmount > 10000) convertedAmount * 0.01f else 0f // 1% TDS for amounts > 10,000 INR
-    val internationalProcessingFee = 35f // Fixed international processing fee
+    // Calculate fees
+    val serviceCharge = convertedAmount * 0.015f
+    val gstOnService = serviceCharge * 0.18f
+    val networkFee = 25f
+    val spreadAmount = amountValue * rateSpread
+    val platformFee = convertedAmount * 0.01f
+    val tdsCharge = if (convertedAmount > 10000) convertedAmount * 0.01f else 0f
+    val internationalProcessingFee = 35f
 
     // Total deductions
     val totalFees = serviceCharge + gstOnService + networkFee + spreadAmount + platformFee + tdsCharge + internationalProcessingFee
@@ -88,8 +79,45 @@ fun AddFundsScreen() {
         if (selectedCurrency == "USD") Locale.US else Locale.GERMANY
     )
 
-    // Animation for the payment success
-    val coroutineScope = rememberCoroutineScope()
+    // Context for Razorpay
+    val context = LocalContext.current
+    val activity = context as Activity
+
+    // Initialize Razorpay Checkout
+    val checkout = Checkout()
+    checkout.setKeyID("rzp_test_qaxROdR325sQgT") // Replace with your Razorpay key
+
+    // Function to start Razorpay payment
+    fun startRazorpayPayment() {
+        try {
+            val options = JSONObject()
+
+            options.put("name", "ChainEx")
+            options.put("description", "Add Funds to Wallet")
+            options.put("currency", "INR")
+            options.put("amount", (finalAmount * 100).toInt())
+
+            options.put("prefill", JSONObject().apply {
+                put("email", "sanketmane2323@gmail.com")
+                put("contact", "8600295685")
+            })
+
+            options.put("theme", JSONObject().apply {
+                put("color", "#1A73E8")
+            })
+
+            val notes = JSONObject()
+            notes.put("original_amount", "${selectedCurrency} ${amount}")
+            notes.put("conversion_rate", conversionRate)
+            notes.put("total_fees", totalFees)
+            options.put("notes", notes)
+
+            checkout.open(activity, options)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -178,7 +206,6 @@ fun AddFundsScreen() {
                         OutlinedTextField(
                             value = amount,
                             onValueChange = {
-                                // Only allow numeric input with up to 2 decimal places
                                 if (it.isEmpty() || it.matches(Regex("^\\d+(\\.\\d{0,2})?\$"))) {
                                     amount = it
                                 }
@@ -211,14 +238,12 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Show approximate conversion
                         Text(
                             text = "≈ ${formatInr.format(convertedAmount)}",
                             fontSize = 16.sp,
                             color = secondaryTextColor
                         )
 
-                        // Show fee information
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
@@ -246,63 +271,10 @@ fun AddFundsScreen() {
                             fontWeight = FontWeight.Medium
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Exchange rate info with Chainlink
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFF5F5F5)
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(12.dp)
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.Info,
-                                        contentDescription = "Info",
-                                        tint = secondaryTextColor,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "Current Exchange Rate",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = textColor
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Text(
-                                    text = "1 $selectedCurrency = ₹${String.format("%.2f", conversionRate)}",
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = textColor
-                                )
-
-                                Text(
-                                    text = "Chainlink Oracle: 1 $selectedCurrency = ₹${String.format("%.2f", chainlinkOracleRate)}",
-                                    fontSize = 12.sp,
-                                    color = secondaryTextColor
-                                )
-
-                                Text(
-                                    text = "Updated: ${getCurrentTimeFormatted()}",
-                                    fontSize = 11.sp,
-                                    color = secondaryTextColor.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
-
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
-                            onClick = { currentScreen = "card" },
+                            onClick = { currentScreen = "breakdown" },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = buttonBlue
                             ),
@@ -315,268 +287,6 @@ fun AddFundsScreen() {
                                 text = "CONTINUE TO PAYMENT",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Credit Card Form Screen
-            AnimatedVisibility(
-                visible = currentScreen == "card",
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = cardBg),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Payment Details",
-                            fontSize = 18.sp,
-                            color = textColor,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-                            text = "Adding ${formatForeign.format(amountValue)} to your wallet",
-                            fontSize = 14.sp,
-                            color = secondaryTextColor
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Card number
-                        OutlinedTextField(
-                            value = cardNumber,
-                            onValueChange = { newValue ->
-                                // Format credit card number with spaces every 4 digits
-                                if (newValue.count { it == ' ' } <= 3 && newValue.length <= 19) {
-                                    val digitsOnly = newValue.filter { it.isDigit() }
-                                    if (digitsOnly.length <= 16) {
-                                        cardNumber = digitsOnly.chunked(4).joinToString(" ")
-                                    }
-                                }
-                            },
-                            label = { Text("Card Number") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.CreditCard,
-                                    contentDescription = "Card",
-                                    tint = secondaryTextColor
-                                )
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor,
-                                cursorColor = accentGreen,
-                                focusedBorderColor = accentGreen,
-                                unfocusedBorderColor = borderGray,
-                                focusedLabelColor = accentGreen,
-                                unfocusedLabelColor = secondaryTextColor
-                            ),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            placeholder = { Text("1234 5678 9012 3456") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Cardholder name
-                        OutlinedTextField(
-                            value = cardName,
-                            onValueChange = { cardName = it },
-                            label = { Text("Cardholder Name") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Person",
-                                    tint = secondaryTextColor
-                                )
-                            },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedTextColor = textColor,
-                                unfocusedTextColor = textColor,
-                                cursorColor = accentGreen,
-                                focusedBorderColor = accentGreen,
-                                unfocusedBorderColor = borderGray,
-                                focusedLabelColor = accentGreen,
-                                unfocusedLabelColor = secondaryTextColor
-                            ),
-                            placeholder = { Text("John Smith") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Expiry date (improved) and CVV in a row
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // Month dropdown
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "Expiry Date",
-                                    fontSize = 12.sp,
-                                    color = secondaryTextColor,
-                                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
-                                )
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    // Month field
-                                    OutlinedTextField(
-                                        value = expiryMonth,
-                                        onValueChange = {
-                                            if (it.length <= 2 && it.all { char -> char.isDigit() }) {
-                                                val asInt = it.toIntOrNull() ?: 0
-                                                if (it.isEmpty() || (asInt in 1..12)) {
-                                                    expiryMonth = it
-                                                }
-                                            }
-                                        },
-                                        placeholder = { Text("MM") },
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedTextColor = textColor,
-                                            unfocusedTextColor = textColor,
-                                            cursorColor = accentGreen,
-                                            focusedBorderColor = accentGreen,
-                                            unfocusedBorderColor = borderGray
-                                        ),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.weight(1f),
-                                        textStyle = androidx.compose.ui.text.TextStyle(textAlign = TextAlign.Center)
-                                    )
-
-                                    Text(
-                                        text = "/",
-                                        fontSize = 20.sp,
-                                        color = textColor,
-                                        modifier = Modifier.padding(top = 8.dp)
-                                    )
-
-                                    // Year field
-                                    OutlinedTextField(
-                                        value = expiryYear,
-                                        onValueChange = {
-                                            if (it.length <= 2 && it.all { char -> char.isDigit() }) {
-                                                expiryYear = it
-                                            }
-                                        },
-                                        placeholder = { Text("YY") },
-                                        colors = OutlinedTextFieldDefaults.colors(
-                                            focusedTextColor = textColor,
-                                            unfocusedTextColor = textColor,
-                                            cursorColor = accentGreen,
-                                            focusedBorderColor = accentGreen,
-                                            unfocusedBorderColor = borderGray
-                                        ),
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.weight(1f),
-                                        textStyle = androidx.compose.ui.text.TextStyle(textAlign = TextAlign.Center)
-                                    )
-                                }
-                            }
-
-                            // CVV field
-                            Column(modifier = Modifier.weight(0.8f)) {
-                                Text(
-                                    text = "CVV",
-                                    fontSize = 12.sp,
-                                    color = secondaryTextColor,
-                                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
-                                )
-
-                                OutlinedTextField(
-                                    value = cvv,
-                                    onValueChange = {
-                                        if (it.length <= 3 && it.all { char -> char.isDigit() }) {
-                                            cvv = it
-                                        }
-                                    },
-                                    placeholder = { Text("123") },
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedTextColor = textColor,
-                                        unfocusedTextColor = textColor,
-                                        cursorColor = accentGreen,
-                                        focusedBorderColor = accentGreen,
-                                        unfocusedBorderColor = borderGray
-                                    ),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textStyle = androidx.compose.ui.text.TextStyle(textAlign = TextAlign.Center)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // Secure payment information
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = "Secure",
-                                tint = accentGreen,
-                                modifier = Modifier.size(16.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text(
-                                text = "Your payment info is secured with 256-bit encryption",
-                                fontSize = 12.sp,
-                                color = secondaryTextColor
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Button(
-                            onClick = { currentScreen = "breakdown" },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = buttonBlue
-                            ),
-                            enabled = cardNumber.replace(" ", "").length == 16 &&
-                                    cardName.isNotEmpty() &&
-                                    expiryMonth.isNotEmpty() &&
-                                    expiryYear.isNotEmpty() &&
-                                    cvv.length == 3,
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        ) {
-                            Text(
-                                text = "PROCEED TO CONFIRMATION",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        TextButton(
-                            onClick = { currentScreen = "amount" },
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        ) {
-                            Text(
-                                text = "Go Back",
-                                color = secondaryTextColor
                             )
                         }
                     }
@@ -611,7 +321,6 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // Original amount
                         BreakdownRow(
                             label = "Amount (${selectedCurrency})",
                             value = formatForeign.format(amountValue),
@@ -621,37 +330,15 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Exchange rate with ChainLink oracle info
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Exchange Rate",
-                                    fontSize = 14.sp,
-                                    color = secondaryTextColor
-                                )
-
-                                Text(
-                                    text = "via Chainlink Oracle",
-                                    fontSize = 12.sp,
-                                    color = secondaryTextColor.copy(alpha = 0.7f)
-                                )
-                            }
-
-                            Text(
-                                text = "1 ${selectedCurrency} = ₹${String.format("%.2f", conversionRate)}",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = textColor
-                            )
-                        }
+                        BreakdownRow(
+                            label = "Exchange Rate",
+                            value = "1 ${selectedCurrency} = ₹${String.format("%.2f", conversionRate)}",
+                            textColor = textColor,
+                            secondaryTextColor = secondaryTextColor
+                        )
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Converted amount
                         BreakdownRow(
                             label = "Converted Amount",
                             value = formatInr.format(convertedAmount),
@@ -661,7 +348,6 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Fees Section Header
                         Text(
                             text = "Fees & Charges",
                             fontSize = 16.sp,
@@ -671,7 +357,6 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Service charge
                         BreakdownRow(
                             label = "Service Charge (1.5%)",
                             value = "- ${formatInr.format(serviceCharge)}",
@@ -680,7 +365,6 @@ fun AddFundsScreen() {
                             valueColor = negativeColor
                         )
 
-                        // GST on service charge
                         BreakdownRow(
                             label = "GST on Service (18%)",
                             value = "- ${formatInr.format(gstOnService)}",
@@ -689,7 +373,6 @@ fun AddFundsScreen() {
                             valueColor = negativeColor
                         )
 
-                        // Platform Fee
                         BreakdownRow(
                             label = "Platform Fee (1%)",
                             value = "- ${formatInr.format(platformFee)}",
@@ -698,7 +381,6 @@ fun AddFundsScreen() {
                             valueColor = negativeColor
                         )
 
-                        // TDS (if applicable)
                         if (tdsCharge > 0) {
                             BreakdownRow(
                                 label = "TDS (1%)",
@@ -709,16 +391,14 @@ fun AddFundsScreen() {
                             )
                         }
 
-                        // Network fee
                         BreakdownRow(
-                            label = "Blockchain Network Fee",
+                            label = "Network Fee",
                             value = "- ${formatInr.format(networkFee)}",
                             textColor = textColor,
                             secondaryTextColor = secondaryTextColor,
                             valueColor = negativeColor
                         )
 
-                        // International Processing Fee
                         BreakdownRow(
                             label = "International Processing Fee",
                             value = "- ${formatInr.format(internationalProcessingFee)}",
@@ -727,7 +407,6 @@ fun AddFundsScreen() {
                             valueColor = negativeColor
                         )
 
-                        // Exchange rate spread
                         BreakdownRow(
                             label = "Exchange Rate Spread",
                             value = "- ${formatInr.format(spreadAmount)}",
@@ -738,7 +417,6 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Total fees
                         BreakdownRow(
                             label = "Total Fees & Taxes",
                             value = "- ${formatInr.format(totalFees)}",
@@ -753,14 +431,13 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Final amount
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Amount Added to Wallet",
+                                text = "Amount to Pay",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
@@ -774,88 +451,17 @@ fun AddFundsScreen() {
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        // Conversion Summary
-                        Text(
-                            text = "${formatForeign.format(amountValue)} = ${formatInr.format(finalAmount)}",
-                            fontSize = 14.sp,
-                            color = secondaryTextColor,
-                            modifier = Modifier.align(Alignment.End)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        // Card info summary
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFF5F5F5)
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.CreditCard,
-                                    contentDescription = "Card",
-                                    tint = secondaryTextColor,
-                                    modifier = Modifier.size(20.dp)
-                                )
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                Column {
-                                    Text(
-                                        text = "**** **** **** ${cardNumber.takeLast(4)}",
-                                        fontSize = 14.sp,
-                                        color = textColor,
-                                        fontWeight = FontWeight.Medium
-                                    )
-
-                                    Text(
-                                        text = "Exp: ${expiryMonth.padStart(2, '0')}/${expiryYear.padStart(2, '0')}",
-                                        fontSize = 12.sp,
-                                        color = secondaryTextColor
-                                    )
-                                }
-                            }
-                        }
-
                         Spacer(modifier = Modifier.height(24.dp))
-                        val context = LocalContext.current
-                        // Add Funds button
+
                         Button(
                             onClick = {
                                 isProcessing = true
-                                coroutineScope.launch {
-                                    // Simulate processing
-                                    delay(2000)
-                                    isProcessing = false
-                                    processingComplete = true
-                                    delay(1500)
-                                    // Reset form for demo purposes
-                                    // Reset form for demo purposes
-                                    val intent = Intent(context, MainActivity::class.java)
-                                    // You can add flags if needed, for example to clear the back stack
-                                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                                    context.startActivity(intent)
-                                    currentScreen = "amount"
-                                    processingComplete = false
-                                    cardNumber = ""
-                                    cardName = ""
-                                    expiryMonth = ""
-                                    expiryYear = ""
-                                    cvv = ""
-                                }
+                                startRazorpayPayment()
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = buttonBlue
                             ),
-                            enabled = !isProcessing && !processingComplete,
+                            enabled = !isProcessing,
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -866,23 +472,9 @@ fun AddFundsScreen() {
                                     color = Color.White,
                                     modifier = Modifier.size(24.dp)
                                 )
-                            } else if (processingComplete) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.CheckCircle,
-                                        contentDescription = "Success",
-                                        tint = Color.White
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "FUNDS ADDED",
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
                             } else {
                                 Text(
-                                    text = "CONFIRM PAYMENT",
+                                    text = "PAY WITH RAZORPAY",
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -891,115 +483,16 @@ fun AddFundsScreen() {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (!isProcessing && !processingComplete) {
-                            TextButton(
-                                onClick = { currentScreen = "card" },
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            ) {
-                                Text(
-                                    text = "Go Back",
-                                    color = secondaryTextColor
-                                )
-                            }
+                        TextButton(
+                            onClick = { currentScreen = "amount" },
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        ) {
+                            Text(
+                                text = "Go Back",
+                                color = secondaryTextColor
+                            )
                         }
                     }
-                }
-            }
-
-            // Security notice
-            AnimatedVisibility(
-                visible = !isProcessing,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = "Secure",
-                        tint = secondaryTextColor,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = "Secured by ChainEx Blockchain Technology",
-                        fontSize = 12.sp,
-                        color = secondaryTextColor
-                    )
-                }
-            }
-        }
-
-        // Success animation overlay - moved outside the Column to overlay the entire screen
-        AnimatedVisibility(
-            visible = processingComplete,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.9f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .background(accentGreen.copy(alpha = 0.1f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Success",
-                            tint = accentGreen,
-                            modifier = Modifier.size(80.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Text(
-                        text = "Funds Added Successfully!",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = textColor
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "${formatForeign.format(amountValue)} → ${formatInr.format(finalAmount)}",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = accentGreen
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = "Added to your ChainEx wallet",
-                        fontSize = 14.sp,
-                        color = secondaryTextColor
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "Transaction ID: ${generateTransactionId()}",
-                        fontSize = 12.sp,
-                        color = secondaryTextColor
-                    )
                 }
             }
         }
@@ -1059,7 +552,9 @@ fun BreakdownRow(
     valueColor: Color = textColor
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -1078,39 +573,8 @@ fun BreakdownRow(
     }
 }
 
-// Helper function to generate a formatted current time
+// Helper function to get current time formatted
 private fun getCurrentTimeFormatted(): String {
-    val calendar = Calendar.getInstance()
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-    val month = calendar.get(Calendar.MONTH) + 1 // Month is 0-based
-    val year = calendar.get(Calendar.YEAR)
-
-    return String.format(
-        "%02d:%02d, %02d/%02d/%d",
-        hour,
-        minute,
-        day,
-        month,
-        year
-    )
-}
-
-// Helper function to generate a random transaction ID
-private fun generateTransactionId(): String {
-    val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    val prefix = "TX"
-    val random = java.util.Random()
-    val suffix = (1..8)
-        .map { chars[random.nextInt(chars.length)] }
-        .joinToString("")
-
-    return "$prefix-$suffix"
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AddFundsScreenPreview() {
-    AddFundsScreen()
+    val sdf = SimpleDateFormat("HH:mm, dd/MM/yyyy", Locale.getDefault())
+    return sdf.format(Date())
 }
