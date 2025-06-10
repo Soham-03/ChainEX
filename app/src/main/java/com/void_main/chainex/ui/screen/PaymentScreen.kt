@@ -45,7 +45,7 @@ fun PaymentScreen() {
 
     // Initialize Razorpay Checkout
     val checkout = Checkout()
-    checkout.setKeyID("rzp_test_qaxROdR325sQgT") // Replace with your Razorpay key
+    checkout.setKeyID("") // Replace with your Razorpay key
 
     // Function to start Razorpay payment
     fun startRazorpayPayment() {
