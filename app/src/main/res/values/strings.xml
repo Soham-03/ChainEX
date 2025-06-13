@@ -10,4 +10,6 @@
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_bill">BillActivity</string>
     <string name="title_activity_personal_wallet">PersonalWalletActivity</string>
+    <string name="title_activity_video_kyc">VideoKycActivity</string>
+    <string name="title_activity_notes">NotesActivity</string>
 </resources>

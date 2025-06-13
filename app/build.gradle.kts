@@ -80,6 +80,16 @@ dependencies {
     implementation(libs.play.services.code.scanner)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    //camera
+    implementation("androidx.camera:camera-core:1.3.0")
+    implementation("androidx.camera:camera-camera2:1.3.0")
+    implementation("androidx.camera:camera-lifecycle:1.3.0")
+    implementation("androidx.camera:camera-view:1.3.0")
+    implementation("com.google.guava:guava:31.1-android")
+
+    //permissions
+    implementation ("com.google.accompanist:accompanist-permissions:0.32.0")
     //web3
 //    implementation("com.walletconnect:android-sdk:1.11.0")
 //    implementation("org.web3j:core:4.9.8")

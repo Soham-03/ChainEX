@@ -27,6 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.void_main.chainex.activity.KYCActivity
+import com.void_main.chainex.activity.NotesActivity
+import com.void_main.chainex.activity.VideoKycActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,14 +76,14 @@ fun ChainExLoginScreen() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "ChainEx",
+                text = "ZapUPI",
                 fontSize = 32.sp,
                 color = textColor,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
-                text = "Secure Blockchain Payments",
+                text = "Pay the Indian way, right away.",
                 fontSize = 16.sp,
                 color = secondaryTextColor,
                 fontWeight = FontWeight.Light
@@ -174,7 +176,7 @@ fun ChainExLoginScreen() {
             // Login button
             Button(
                 onClick = {
-                    val intent = Intent(context, KYCActivity::class.java)
+                    val intent = Intent(context, NotesActivity::class.java)
                     context.startActivity(intent)
                 },
                 colors = ButtonDefaults.buttonColors(

@@ -1,4 +1,4 @@
-package com.void_main.chainex
+package com.void_main.chainex.activity
 
 import android.os.Bundle
 import android.widget.Toast
@@ -8,7 +8,7 @@ import com.razorpay.Checkout
 import com.razorpay.PaymentResultListener
 import com.void_main.chainex.ui.screen.PaymentScreen
 
-class PaymentActivity : ComponentActivity(), PaymentResultListener {
+class PaymentActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Checkout.preload(applicationContext)
@@ -16,14 +16,5 @@ class PaymentActivity : ComponentActivity(), PaymentResultListener {
         setContent {
             PaymentScreen()
         }
-    }
-
-    override fun onPaymentSuccess(razorpayPaymentId: String?) {
-        Toast.makeText(this, "Payment Successful!", Toast.LENGTH_LONG).show()
-        finish()
-    }
-
-    override fun onPaymentError(code: Int, response: String?) {
-        Toast.makeText(this, "Payment Failed: $response", Toast.LENGTH_LONG).show()
     }
 }

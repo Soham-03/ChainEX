@@ -3,11 +3,10 @@ package com.void_main.chainex.util
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import androidx.navigation.compose.rememberNavController
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import com.void_main.chainex.PaymentActivity
+import com.void_main.chainex.activity.PaymentActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class BarcodeScanner(val context: Context) {

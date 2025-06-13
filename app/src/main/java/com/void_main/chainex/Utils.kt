@@ -16,4 +16,5 @@ object Utils {
         Transaction(800, "Meera Krishnan", "0x5678...9012", TransactionStatus.SUCCESS)
     )
     var clickedLatLng: com.google.android.gms.maps.model.LatLng? = null
+    var amountDeposited = 15801
 }

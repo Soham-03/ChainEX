@@ -40,7 +40,7 @@ fun ForeignUserKycScreen() {
     var passportUploaded by remember { mutableStateOf(false) }
     var visaUploaded by remember { mutableStateOf(false) }
     var verificationStarted by remember { mutableStateOf(false) }
-    var countdownSeconds by remember { mutableStateOf(60) } // 1 minute countdown
+    var countdownSeconds by remember { mutableStateOf(30) } // 1 minute countdown
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -64,7 +64,7 @@ fun ForeignUserKycScreen() {
                 verificationStarted = false
                 passportUploaded = false
                 visaUploaded = false
-                countdownSeconds = 60
+                countdownSeconds = 30
             }
         }
     }
@@ -426,7 +426,7 @@ fun VerificationProgressSection(
         Spacer(modifier = Modifier.height(24.dp))
 
         LinearProgressIndicator(
-            progress = { 1f - (secondsRemaining / 60f) },
+            progress = { 1f - (secondsRemaining / 30f) },
             color = buttonBlue,
             trackColor = buttonBlue.copy(alpha = 0.2f),
             modifier = Modifier
@@ -546,8 +546,8 @@ fun VerificationStep(
 
 // Helper function to format time
 fun formatTime(seconds: Int): String {
-    val minutes = seconds / 60
-    val remainingSeconds = seconds % 60
+    val minutes = seconds / 30
+    val remainingSeconds = seconds % 30
     return "$minutes:${remainingSeconds.toString().padStart(2, '0')}"
 }
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.razorpay.Checkout
 import com.void_main.chainex.MainActivity
+import com.void_main.chainex.Utils
 import org.json.JSONObject
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -57,7 +58,7 @@ fun AddFundsScreen() {
 
     // Calculate conversion
     val conversionRate = if (selectedCurrency == "USD") usdToInrRate else eurToInrRate
-    val amountValue = amount.toFloatOrNull() ?: 0f
+    val    amountValue = amount.toFloatOrNull() ?: 0f
     val convertedAmount = amountValue * conversionRate
 
     // Calculate fees
@@ -94,8 +95,8 @@ fun AddFundsScreen() {
 
             options.put("name", "ChainEx")
             options.put("description", "Add Funds to Wallet")
-            options.put("currency", "INR")
-            options.put("amount", (finalAmount * 100).toInt())
+            options.put("currency", "USD")
+            options.put("amount", (amountValue * 100).toInt())
 
             options.put("prefill", JSONObject().apply {
                 put("email", "sanketmane2323@gmail.com")
@@ -113,7 +114,7 @@ fun AddFundsScreen() {
             options.put("notes", notes)
 
             checkout.open(activity, options)
-
+            Utils.amountDeposited = finalAmount.toInt()
         } catch (e: Exception) {
             e.printStackTrace()
         }
