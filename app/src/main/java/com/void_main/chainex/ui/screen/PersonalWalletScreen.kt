@@ -52,7 +52,7 @@ fun PersonalWalletScreen(
     var selectedCurrency by remember { mutableStateOf("USD") }
 
     // Currency data
-    val currentBalance = 12580.45
+    val currentBalance = 15801.45
     val usdToInrRates = remember { generateRandomRates(81.5f, 83.5f) }
     val eurToInrRates = remember { generateRandomRates(88.5f, 91.5f) }
 

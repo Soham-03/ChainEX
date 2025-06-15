@@ -86,7 +86,7 @@ fun AddFundsScreen() {
 
     // Initialize Razorpay Checkout
     val checkout = Checkout()
-    checkout.setKeyID("rzp_test_qaxROdR325sQgT") // Replace with your Razorpay key
+    checkout.setKeyID("") // Replace with your Razorpay key
 
     // Function to start Razorpay payment
     fun startRazorpayPayment() {
@@ -99,8 +99,8 @@ fun AddFundsScreen() {
             options.put("amount", (amountValue * 100).toInt())
 
             options.put("prefill", JSONObject().apply {
-                put("email", "sanketmane2323@gmail.com")
-                put("contact", "8600295685")
+                put("email", "")
+                put("contact", "")
             })
 
             options.put("theme", JSONObject().apply {
